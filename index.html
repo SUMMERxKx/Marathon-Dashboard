@@ -1,0 +1,691 @@
+<title>Road to May 2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky bar + athlete toggle, stat strip, tabbed panels, data tables */
+:root{
+  --bg:#F5F7F9; --surface:#FFFFFF; --surface-2:#EAEEF2; --raise:#FDFDFE;
+  --fg:#131A22; --dim:#5C6876; --faint:#8894A2; --line:#DCE2E9;
+  --a1:#C2410C; --a1-soft:#FBEAE1; --a2:#0E7490; --a2-soft:#E0F1F5;
+  --ok:#15803D; --down:#7C6F3E; --down-soft:#F6F1DF;
+  --accent:var(--a1);
+  --d:'Barlow Condensed',Impact,sans-serif;
+  --b:'IBM Plex Sans',system-ui,sans-serif;
+  --m:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D131A; --surface:#151D26; --surface-2:#1C2630; --raise:#1A242E;
+  --fg:#E3E9F0; --dim:#8E9BAA; --faint:#6B7887; --line:#27333E;
+  --a1:#F97E45; --a1-soft:#33201A; --a2:#2CB7CE; --a2-soft:#13282E;
+  --ok:#4ADE80; --down:#C9B778; --down-soft:#2A2616;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0D131A; --surface:#151D26; --surface-2:#1C2630; --raise:#1A242E;
+  --fg:#E3E9F0; --dim:#8E9BAA; --faint:#6B7887; --line:#27333E;
+  --a1:#F97E45; --a1-soft:#33201A; --a2:#2CB7CE; --a2-soft:#13282E;
+  --ok:#4ADE80; --down:#C9B778; --down-soft:#2A2616;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--b);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
+body[data-ath="r2"]{--accent:var(--a2)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--surface);z-index:30}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--d);font-weight:600;letter-spacing:.01em;text-wrap:balance;margin:0}
+.num{font-family:var(--m);font-variant-numeric:tabular-nums}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto;min-width:0}
+.brand h1{font-size:27px;line-height:1;text-transform:uppercase;letter-spacing:.03em}
+.brand .d8{font-family:var(--m);font-size:11px;color:var(--faint);letter-spacing:.06em;white-space:nowrap}
+.toggle{display:flex;background:var(--surface-2);border-radius:8px;padding:3px;gap:2px}
+.toggle button{font:inherit;font-weight:500;font-size:13px;border:0;background:none;color:var(--dim);padding:7px 13px;border-radius:6px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.toggle button .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.45}
+.toggle button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.toggle button[aria-pressed="true"] .dot{opacity:1}
+#tgS[aria-pressed="true"]{color:var(--a1)} #tgR[aria-pressed="true"]{color:var(--a2)}
+.themeb{font:inherit;font-size:16px;line-height:1;border:1px solid var(--line);background:var(--surface);color:var(--dim);width:34px;height:34px;border-radius:8px;cursor:pointer}
+
+/* stat strip */
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-block:20px}
+.stat{background:var(--surface);padding:14px 16px}
+.stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600}
+.stat .v{font-family:var(--d);font-size:34px;line-height:1.05;font-weight:700;margin-top:3px}
+.stat .s{font-size:12px;color:var(--dim);margin-top:1px}
+.stat.hero .v{color:var(--accent)}
+
+/* phase rail */
+.rail{display:flex;gap:4px;margin-bottom:22px}
+.ph{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-width:0}
+.ph.on{border-color:var(--accent);background:var(--raise);box-shadow:inset 0 0 0 1px var(--accent)}
+.ph .n{font-family:var(--m);font-size:10px;color:var(--faint);letter-spacing:.05em}
+.ph .t{font-family:var(--d);font-size:17px;font-weight:600;line-height:1.15}
+.ph .r{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* tabs */
+nav.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{font:inherit;font-weight:500;font-size:14px;border:0;background:none;color:var(--dim);padding:11px 15px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+section.panel{padding-block:24px 56px}
+
+/* generic */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
+h2.sec{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:600;font-family:var(--b);margin:30px 0 11px}
+h2.sec:first-child{margin-top:0}
+p{margin:0 0 11px;max-width:68ch}
+p:last-child{margin-bottom:0}
+.lede{color:var(--dim);font-size:14.5px}
+strong{font-weight:600}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:8px 13px;border-bottom:1px solid var(--line)}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);font-weight:600;background:var(--surface-2);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-family:var(--m);font-variant-numeric:tabular-nums}
+tr.down td{background:var(--down-soft)}
+tr.race td{background:var(--a1-soft);font-weight:600}
+body[data-ath="r2"] tr.race td{background:var(--a2-soft)}
+.pill{display:inline-block;font-family:var(--m);font-size:10px;padding:1px 6px;border-radius:4px;background:var(--surface-2);color:var(--dim);letter-spacing:.04em}
+.pill.d{background:var(--down-soft);color:var(--down)}
+.bar{display:inline-block;height:7px;border-radius:2px;background:var(--accent);opacity:.75;vertical-align:middle}
+.fail{color:var(--a1);font-weight:600}
+body[data-ath="r2"] .fail{color:var(--a1)}
+.note{border-left:2px solid var(--accent);padding:2px 0 2px 14px;color:var(--dim);font-size:14px;margin:14px 0}
+.chg{background:var(--accent);color:#fff;font-family:var(--m);font-size:10px;padding:1px 5px;border-radius:3px;margin-left:5px;letter-spacing:.03em}
+ul{margin:0 0 11px;padding-left:19px}li{margin-bottom:4px}
+.wk{margin-bottom:9px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.wk>summary{cursor:pointer;padding:11px 15px;display:flex;align-items:center;gap:12px;font-weight:500;list-style:none}
+.wk>summary::-webkit-details-marker{display:none}
+.wk>summary::before{content:"▸";color:var(--faint);font-size:11px;transition:transform .15s}
+.wk[open]>summary::before{transform:rotate(90deg)}
+.wk .wn{font-family:var(--d);font-size:19px;font-weight:600;min-width:34px}
+.wk .wd{font-family:var(--m);font-size:11.5px;color:var(--faint)}
+.wk .wkm{margin-left:auto;font-family:var(--m);font-size:12.5px;color:var(--dim)}
+.wk table{border-top:1px solid var(--line)}
+.day{font-family:var(--m);font-size:11px;color:var(--faint);text-transform:uppercase;width:62px}
+footer{border-top:1px solid var(--line);padding-block:20px 34px;color:var(--faint);font-size:12.5px}
+@media(max-width:620px){
+  .rail{flex-wrap:wrap}.ph{flex:1 1 calc(50% - 4px)}
+  .brand h1{font-size:23px}.stat .v{font-size:29px}
+  th,td{padding:7px 10px;font-size:12.5px}
+}
+</style>
+
+<header>
+ <div class="wrap hrow">
+  <div class="brand">
+    <h1>Road to May&nbsp;2</h1>
+    <span class="d8">SUN 2 MAY 2027 · 42.2 KM</span>
+  </div>
+  <div class="toggle" role="group" aria-label="Athlete">
+    <button id="tgS" aria-pressed="true"  onclick="setAth('samar')"><span class="dot"></span>Samar</button>
+    <button id="tgR" aria-pressed="false" onclick="setAth('r2')"><span class="dot"></span>Runner 2</button>
+  </div>
+  <button class="themeb" id="thb" onclick="cycleTheme()" title="Theme">◐</button>
+ </div>
+</header>
+
+<div class="wrap">
+  <div class="strip">
+    <div class="stat hero"><div class="k">Days to race</div><div class="v num" id="sDays">—</div><div class="s" id="sWeeks">—</div></div>
+    <div class="stat"><div class="k">Current phase</div><div class="v" id="sPhase">—</div><div class="s" id="sPhaseR">—</div></div>
+    <div class="stat"><div class="k">This week</div><div class="v num" id="sKm">—</div><div class="s" id="sLong">—</div></div>
+    <div class="stat"><div class="k">Weight target</div><div class="v num" id="sWt">—</div><div class="s" id="sWtS">—</div></div>
+    <div class="stat"><div class="k">Eat today</div><div class="v num" id="sKcal">—</div><div class="s" id="sMacro">—</div></div>
+  </div>
+
+  <div class="rail" id="rail"></div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true"  onclick="tab('ov')">Overview</button>
+    <button role="tab" aria-selected="false" onclick="tab('run')">Running</button>
+    <button role="tab" aria-selected="false" onclick="tab('lift')">Lifting</button>
+    <button role="tab" aria-selected="false" onclick="tab('fuel')">Fuel</button>
+    <button role="tab" aria-selected="false" onclick="tab('p1')">Phase 1 calendar</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <section class="panel" id="p-ov">
+    <h2 class="sec">The plan in one paragraph</h2>
+    <p>26 weeks from <strong>Mon 2 Nov 2026</strong> to the marathon on <strong>Sun 2 May 2027</strong>.
+       Running volume goes from 16 km a week to a peak of 66, with two 32 km long runs.
+       Lifting drops from four days to two as the mileage climbs, and almost everything below the
+       waist comes off failure training. <span id="ovCut"></span></p>
+
+    <h2 class="sec">Where you're starting</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="font-size:19px">The engine is ready</h3>
+        <p class="lede">VO<sub>2</sub> max <strong class="num">58.7</strong>, average pace <strong class="num">4:58 /km</strong>
+        across October. That is not a beginner's aerobic ceiling. Speed is not the limiter.</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size:19px">The legs are not</h3>
+        <p class="lede"><strong class="num">14 km</strong> a week, longest run around 10 km, <strong class="num">309 km</strong>
+        lifetime. Race day alone is 14% of every kilometre ever run. The gap is duration, not fitness.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Every run is currently too fast.</strong> October paces ran 4:54–5:38 /km.
+      Easy pace should be <strong>6:00–6:30 /km</strong> — slow enough to hold a conversation —
+      and roughly 80% of weekly volume belongs there. This is the single highest-value change in the plan.
+    </div>
+
+    <h2 class="sec">October baseline</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Week of</th><th class="n">Runs</th><th class="n">Run km</th><th class="n">Run min</th><th class="n">Gym</th><th class="n">Gym min</th></tr></thead>
+      <tbody>
+        <tr><td>Oct 4</td><td class="n">2</td><td class="n">15.4</td><td class="n">76</td><td class="n">7</td><td class="n">328</td></tr>
+        <tr><td>Oct 11</td><td class="n">3</td><td class="n">8.7</td><td class="n">39</td><td class="n">7</td><td class="n">336</td></tr>
+        <tr><td>Oct 18</td><td class="n">4</td><td class="n">18.8</td><td class="n">98</td><td class="n">7</td><td class="n">367</td></tr>
+        <tr><td>Oct 25</td><td class="n">2</td><td class="n">14.1</td><td class="n">71</td><td class="n">5</td><td class="n">285</td></tr>
+        <tr style="font-weight:600"><td>Average</td><td class="n">2.75</td><td class="n">14.2</td><td class="n">71</td><td class="n">6.5</td><td class="n">329</td></tr>
+      </tbody></table></div>
+
+    <h2 class="sec">Check your cadence</h2>
+    <p class="lede">The Garmin summary reported <strong class="num">138 spm</strong> against a normal 165–180.
+      That same summary gives average speed as 2.3 kph, so it is averaging gym and walking data in —
+      the figure may be contaminated. <strong>Pull cadence off one clean running activity in Week 1.</strong>
+      If it really sits below 160, fixing it does more for injury risk than anything else here.
+      Strides from Week 3 are the main tool.</p>
+
+    <h2 class="sec">Target time</h2>
+    <p class="lede">Don't set one yet. Run a <strong>10 km time trial in late February</strong> (Week 17) and set it off that.
+      From VO<sub>2</sub> max 58.7, current paces, and the weight coming off, somewhere in the
+      <strong>3:10–3:30</strong> range looks plausible for a well-executed first marathon.</p>
+  </section>
+
+  <!-- RUNNING -->
+  <section class="panel" id="p-run" hidden>
+    <h2 class="sec">Paces — these apply to both of you</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Type</th><th>Pace</th><th>How it should feel</th></tr></thead>
+      <tbody>
+        <tr><td>Easy / recovery / long</td><td class="num">6:00–6:30 /km</td><td>Full conversation</td></tr>
+        <tr><td>Marathon pace <span class="pill">provisional</span></td><td class="num">~4:55 /km</td><td>Comfortably hard — confirm in March</td></tr>
+        <tr><td>Tempo</td><td class="num">4:40–4:50 /km</td><td>Hard but controlled, ~40 min sustainable</td></tr>
+        <tr><td>Intervals</td><td class="num">4:10–4:25 /km</td><td>3–5 min reps, equal recovery</td></tr>
+        <tr><td>Strides</td><td class="num">~4:00 /km</td><td>20 seconds, then walk to full recovery</td></tr>
+      </tbody></table></div>
+
+    <h2 class="sec">All 26 weeks</h2>
+    <p class="lede">Down weeks are shaded and are not optional — they are where the training becomes fitness.
+      Peak is 66 km with two 32 km long runs, the last one 27 days out.
+      <strong>This is a ceiling, not a mandate.</strong> Arriving in March healthy at 55 km beats arriving injured at 66.</p>
+    <div class="tw"><table id="wkTable">
+      <thead><tr><th class="n">Wk</th><th>Week of</th><th>Phase</th><th class="n">km</th><th class="n">Long</th><th style="width:36%">Volume</th></tr></thead>
+      <tbody id="wkBody"></tbody></table></div>
+
+    <h2 class="sec">Weekly shape</h2>
+    <div class="grid2">
+      <div class="card"><h3 style="font-size:17px">Phase 1 — 4 runs, 4 lifts</h3>
+        <p class="lede">Mon Push · Tue easy · Wed Pull · Thu easy + core · Fri Legs · <strong>Sat long</strong> · Sun recovery</p></div>
+      <div class="card"><h3 style="font-size:17px">Phase 2 — 5 runs, 3 lifts</h3>
+        <p class="lede">Mon Push + easy · <strong>Tue quality</strong> · Wed Pull · Thu easy · Fri Legs · <strong>Sat long</strong> · Sun recovery</p></div>
+      <div class="card"><h3 style="font-size:17px">Phase 3 — 6 runs, 2 lifts</h3>
+        <p class="lede">Mon easy + short Push · <strong>Tue quality</strong> · Wed easy + short Pull · Thu easy · Fri rest · <strong>Sat long</strong> · Sun recovery</p></div>
+      <div class="card"><h3 style="font-size:17px">Phase 4 — taper</h3>
+        <p class="lede">Volume falls hard, intensity touches stay. Two short upper sessions. <strong>No leg work in the final 10 days.</strong></p></div>
+    </div>
+
+    <h2 class="sec">Quality sessions — Tuesdays, from Phase 2</h2>
+    <p class="lede">Rotate these. Always 2 km easy warm-up and 1 km cool-down.</p>
+    <ul>
+      <li><strong>Tempo</strong> — 20–40 min continuous at tempo pace</li>
+      <li><strong>Cruise intervals</strong> — 4–6 × 1 km at tempo, 90 s jog</li>
+      <li><strong>Long intervals</strong> — 5–6 × 3 min hard, 3 min jog</li>
+      <li><strong>Marathon-pace work</strong> (Phase 3) — 8–16 km at MP, often inside the long run</li>
+    </ul>
+
+    <h2 class="sec">Injury rules</h2>
+    <ul>
+      <li>Never increase weekly volume more than ~10%, and never skip a down week. Both are built into the table.</li>
+      <li>Any pain lasting <strong>more than 3 runs</strong> → 3 days off, then reassess.</li>
+      <li>Shin, Achilles or knee pain that worsens <em>during</em> a run → stop that run.</li>
+      <li>Three days off in November costs nothing. Three weeks off in March costs the race.</li>
+    </ul>
+  </section>
+
+  <!-- LIFTING -->
+  <section class="panel" id="p-lift" hidden>
+    <div class="note">
+      <strong>The one rule that makes this plan work.</strong> Keep training to failure where it is free —
+      upper-body isolation — and drop it everywhere it costs you a running day.
+      A true failure set needs 48–72 hours to recover from. Do that on leg press, curls, hip thrusts
+      <em>and</em> calf raises in one session and you have written off two runs.
+    </div>
+
+    <h2 class="sec">Where failure stays, and where it goes</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="font-size:17px;color:var(--a1)">Keep to failure</h3>
+        <p class="lede">Lateral raise · pec dec · reverse pec dec · preacher curl · hammer curl ·
+          rope pushdown · rope kickback · rope crunch · leg raises</p>
+        <p class="lede">Small upper-body isolation creates little systemic fatigue and nothing it does
+          interferes with running. Go as hard as you like here.</p>
+      </div>
+      <div class="card">
+        <h3 style="font-size:17px">Stop 2–3 reps short</h3>
+        <p class="lede">Incline bench · shoulder press · lat pulldown · seated row ·
+          <strong>and every single leg exercise, without exception</strong></p>
+        <p class="lede"><strong>Calf raises especially.</strong> Your calves are about to absorb every
+          footstrike of a 60 km week. Failure sets on top of that is how Achilles tendinopathy starts,
+          and it takes months to resolve.</p>
+      </div>
+    </div>
+
+    <h2 class="sec">Two exercises come out</h2>
+    <p class="lede"><strong>Leg extension</strong> — knee stress for little carryover to running.
+       <strong>Standing calf raise</strong> — the road gives your calves all the work they need.
+       Everything else you were already doing stays.</p>
+
+    <h2 class="sec">Push — Mondays</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th>Effort</th></tr></thead><tbody>
+      <tr><td>Incline bench press</td><td class="n">4 × 6–8</td><td>RIR 2</td></tr>
+      <tr><td>Shoulder press</td><td class="n">3 × 8–10</td><td>RIR 2</td></tr>
+      <tr><td>Pec dec</td><td class="n">3 × 10–12</td><td class="fail">To failure</td></tr>
+      <tr><td>Lateral raise</td><td class="n">4 × 12–15</td><td class="fail">To failure</td></tr>
+      <tr><td>Rope pushdown</td><td class="n">3 × 10–12</td><td class="fail">To failure</td></tr>
+      <tr><td>Rope kickback</td><td class="n">3 × 12–15</td><td class="fail">To failure</td></tr>
+    </tbody></table></div>
+
+    <h2 class="sec">Pull — Wednesdays</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th>Effort</th></tr></thead><tbody>
+      <tr><td>Lat pulldown</td><td class="n">4 × 8–10</td><td>RIR 2</td></tr>
+      <tr><td>Seated row</td><td class="n">4 × 8–10</td><td>RIR 2</td></tr>
+      <tr><td>Reverse pec dec</td><td class="n">3 × 12–15</td><td class="fail">To failure</td></tr>
+      <tr><td>Preacher curl</td><td class="n">3 × 10–12</td><td class="fail">To failure</td></tr>
+      <tr><td>Hammer curl</td><td class="n">3 × 10–12</td><td class="fail">To failure</td></tr>
+    </tbody></table></div>
+
+    <h2 class="sec">Legs — Fridays <span class="pill">nothing to failure</span></h2>
+    <div class="tw"><table>
+      <thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th>Effort</th></tr></thead><tbody>
+      <tr><td>Leg press</td><td class="n">4 × 8–10</td><td><strong>RIR 3</strong></td></tr>
+      <tr><td>Leg curl</td><td class="n">3 × 10–12</td><td>RIR 2</td></tr>
+      <tr><td>Hip thrust</td><td class="n">3 × 8–10</td><td>RIR 2</td></tr>
+      <tr><td>Abductor</td><td class="n">3 × 12–15</td><td>RIR 2</td></tr>
+      <tr><td>Tibialis raise</td><td class="n">3 × 15–20</td><td>RIR 1</td></tr>
+      <tr><td>Ankle rotation</td><td class="n">2 × 15 each way</td><td>—</td></tr>
+    </tbody></table></div>
+    <p class="lede" style="margin-top:11px">Friday legs sits the day before the long run on purpose — you run Saturday
+      on slightly tired legs, which is what a marathon feels like at 30 km. That only works because Friday never goes to failure.</p>
+
+    <h2 class="sec">Core — Thursdays, after the easy run</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th>Effort</th></tr></thead><tbody>
+      <tr><td>Hanging leg raise</td><td class="n">3 × 10–15</td><td>RIR 1</td></tr>
+      <tr><td>Rope crunch</td><td class="n">3 × 12–15</td><td class="fail">To failure</td></tr>
+    </tbody></table></div>
+
+    <h2 class="sec">What you keep, what you lose</h2>
+    <p class="lede">You will lose some upper-body size in Phase 3 — two maintenance sessions a week
+      against 60 km of running will not hold everything. <strong>Strength holds far better than size</strong>
+      on reduced volume, and it comes back fast after May 2. Legs get leaner and more fatigue-resistant,
+      and lose some size. That is the trade for a marathon.</p>
+    <p class="lede"><strong>Keep creatine the whole block.</strong> Runners sometimes drop it over the water
+      weight; it is one of the few supplements with real evidence behind it, it protects strength while
+      you cut, and a kilo of intracellular water will not slow you down.</p>
+  </section>
+
+  <!-- FUEL -->
+  <section class="panel" id="p-fuel" hidden>
+    <h2 class="sec">The cut, mapped to the race</h2>
+    <p class="lede" id="fuelIntro"></p>
+    <div class="tw"><table>
+      <thead><tr><th>Phase</th><th>Dates</th><th class="n">km/wk</th><th>Deficit</th><th class="n">Eat</th><th class="n">Weight</th></tr></thead>
+      <tbody id="cutBody"></tbody></table></div>
+    <div class="note" id="cutNote"></div>
+
+    <h2 class="sec">What to eat <span class="pill" id="phTag">Phase 1</span></h2>
+    <p class="lede">Same food list for both of you — only the amounts change. Switch phase to see how it scales.</p>
+    <div class="toggle" style="margin-bottom:14px;display:inline-flex" id="phSel">
+      <button aria-pressed="true"  onclick="setPh(0)">Phase 1</button>
+      <button aria-pressed="false" onclick="setPh(1)">Phase 2</button>
+      <button aria-pressed="false" onclick="setPh(2)">Phase 3</button>
+      <button aria-pressed="false" onclick="setPh(3)">Phase 4</button>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Item</th><th class="n">Amount</th><th class="n">kcal</th><th class="n">P</th><th class="n">C</th><th class="n">F</th></tr></thead>
+      <tbody id="foodBody"></tbody>
+      <tfoot id="foodFoot"></tfoot></table></div>
+
+    <h2 class="sec">Fuelling long runs</h2>
+    <p class="lede">New from Phase 2, and the thing most first-timers ignore until race day.
+      <strong>Practise on every long run from Week 9</strong> — the gut adapts to absorbing carbs while
+      running the same way muscle adapts to load, and it takes months.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Run length</th><th>Fuel</th></tr></thead><tbody>
+      <tr><td>Under 75 min</td><td>Water only</td></tr>
+      <tr><td>Over 90 min</td><td><strong>30–60 g carbs/hour</strong>, starting 30–40 min in</td></tr>
+      <tr><td>Over 2.5 h (Phase 3)</td><td><strong>60–90 g/hour</strong> + 300–600 mg sodium/hour</td></tr>
+    </tbody></table></div>
+    <p class="lede" style="margin-top:11px"><strong>Before:</strong> bread + banana, ~60–90 g carbs, 2 h out.
+      <strong>After:</strong> 1.0–1.2 g/kg carbs + 30–40 g protein within the hour — the shake on chocolate
+      milk plus a banana is almost exactly right. Chocolate milk is a poor everyday choice on a cut and a
+      genuinely good post-long-run drink; keep the skim for ordinary days.</p>
+
+    <h2 class="sec">Supplements</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Supplement</th><th>Dose</th><th>Delivers</th></tr></thead><tbody>
+      <tr><td>Creatine monohydrate</td><td class="num">5 g</td><td>Standard maintenance dose</td></tr>
+      <tr><td>Webber Naturals Magnesium Bisglycinate</td><td class="num">1 capsule</td><td>200 mg elemental — before bed</td></tr>
+      <tr><td>Kirkland Omega-3</td><td class="num">1 softgel</td><td>450 EPA / 300 DHA — evening, with fat</td></tr>
+      <tr><td>Multivitamin gummies</td><td class="num">2 gummies</td><td>500 IU D — morning, away from the others</td></tr>
+      <tr><td>Kirkland Vitamin D3</td><td class="num">1 tablet</td><td>1000 IU — evening, with fat</td></tr>
+    </tbody></table></div>
+    <p class="lede" style="margin-top:11px">The gummy label says to take it a few hours away from other natural
+      health products, which rules out one big handful. Total vitamin D across tablet, gummies and milk is
+      <strong class="num">1,700–1,900 IU</strong> against a 4,000 IU limit — comfortably fine.</p>
+
+    <h2 class="sec">Iron — book this in November</h2>
+    <p class="lede">Distance running drains iron through foot-strike hemolysis, sweat and gut losses, and low
+      ferritin is the most common reason a marathon build quietly falls apart. The gummy multivitamin contains
+      <strong>no iron at all</strong>. <strong>Ask for a ferritin test, not just hemoglobin</strong> — ferritin
+      can be on the floor while hemoglobin reads normal, and that is exactly the state where training feels
+      inexplicably hard.</p>
+
+    <h2 class="sec">Calibrating — this beats the formula</h2>
+    <p class="lede">Every calorie number here rests on Mifflin-St Jeor at 180 cm, assuming age ~30 and the male
+      equation. Weigh daily, average the week, and adjust on the trend — your scale beats the arithmetic.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Weekly change</th><th>Action</th></tr></thead><tbody id="calBody"></tbody></table></div>
+    <p class="lede" style="margin-top:11px">Expect the scale to stall in early Phase 2 and again in Phase 3 —
+      more running means more stored glycogen, and glycogen holds water. That is not fat.
+      <strong>Judge by the four-week trend.</strong></p>
+  </section>
+
+  <!-- PHASE 1 CALENDAR -->
+  <section class="panel" id="p-p1" hidden>
+    <h2 class="sec">Phase 1 · Nov 2 – Dec 27 · 172 km</h2>
+    <p class="lede"><strong>The goal of this phase is not fitness. It is becoming someone who runs four days a
+      week without breaking.</strong> Volume is deliberately low. The temptation all through November will be to
+      run faster and further than the plan says. Don't.</p>
+    <div id="calWeeks"></div>
+    <div class="note">
+      <strong>Week 1 is less running than you do now</strong> — 16 km across four runs, spread over more days at a
+      much slower pace. It should feel almost too easy. Tendons adapt to frequency and break under volume, so
+      frequency comes first.
+    </div>
+  </section>
+
+  <footer class="wrap" style="padding-left:0;padding-right:0">
+    <div>Built 30 Oct 2026 from four weeks of Garmin exports and label photos ·
+    Calorie targets are estimates — calibrate against the scale ·
+    Not medical advice; see a physician before a first marathon.</div>
+  </footer>
+</div>
+
+<script>
+const RACE = new Date('2027-05-02T09:00:00');
+const START = new Date('2026-11-02T00:00:00');
+
+const PHASES = [
+  {n:'Phase 1', t:'Base',  w:'W1–8',   d:'Nov 2 – Dec 27', km:'16 → 30 km'},
+  {n:'Phase 2', t:'Build', w:'W9–17',  d:'Dec 28 – Feb 28', km:'32 → 52 km'},
+  {n:'Phase 3', t:'Peak',  w:'W18–23', d:'Mar 1 – Apr 11',  km:'54 → 66 km'},
+  {n:'Phase 4', t:'Taper', w:'W24–26', d:'Apr 12 – May 2',  km:'46 → race'}
+];
+
+// [week, km, longRun, phaseIdx, isDownWeek]
+const WEEKS = [
+ [1,16,7,0,0],[2,18,8,0,0],[3,21,10,0,0],[4,15,8,0,1],[5,24,11,0,0],[6,27,13,0,0],[7,30,15,0,0],[8,21,11,0,1],
+ [9,32,16,1,0],[10,36,18,1,0],[11,40,20,1,0],[12,28,14,1,1],[13,42,22,1,0],[14,46,24,1,0],[15,50,26,1,0],[16,35,18,1,1],[17,52,27,1,0],
+ [18,54,26,2,0],[19,58,29,2,0],[20,44,21,2,1],[21,62,30,2,0],[22,66,32,2,0],[23,60,32,2,0],
+ [24,46,24,3,0],[25,32,16,3,0],[26,42.2,42.2,3,0]
+];
+
+// Phase 1 day-by-day: [tue, thu, satLong, sun], note
+const CAL = [
+ [4,3,7,2,''],
+ [4,4,8,2,''],
+ [5,4,10,2,'strides'],
+ [4,3,8,0,'down'],
+ [6,5,11,2,''],
+ [6,5,13,3,'gel'],
+ [7,5,15,3,'peak'],
+ [6,4,11,0,'down']
+];
+
+const ATH = {
+  samar: {
+    label:'Samar', start:77, target:70, bmi:'23.8 → 21.6',
+    cut:[
+      {def:'−500/day', kcal:2150, wt:'77.0 → 73.4'},
+      {def:'−300/day', kcal:2430, wt:'73.4 → 71.0'},
+      {def:'maintenance', kcal:2840, wt:'71.0 → 70.4'},
+      {def:'maintenance', kcal:2560, wt:'~70.0'}
+    ],
+    rate:'0.45', rateLo:'0.35', rateHi:'0.5',
+    food:[
+      {rice:115, alm:20, ban:1, kri:0, tot:[2155,160,263,58]},
+      {rice:200, alm:20, ban:1, kri:0, tot:[2460,166,330,58]},
+      {rice:260, alm:20, ban:2, kri:1, tot:[2875,172,423,61]},
+      {rice:200, alm:20, ban:1, kri:1, tot:[2550,167,348,60]}
+    ],
+    intro:'You are cutting 7 kg, 9% of bodyweight, across the 17 weeks before the peak block — about 0.55% a week, squarely in the safe range. The 7 kg lands almost exactly on race day without ever eating in a deficit during the peak block.',
+    note:'<strong>Do not try to go faster than this.</strong> Pulling the whole 7 kg off by February would mean cutting at ~0.9%/week through a build to 50 km weeks. That is how you lose muscle instead of fat and pick up a stress injury.'
+  },
+  r2: {
+    label:'Runner 2', start:70, target:66, bmi:'21.6 → 20.4',
+    cut:[
+      {def:'−300/day', kcal:2230, wt:'70.0 → 67.8'},
+      {def:'−175/day', kcal:2460, wt:'67.8 → 66.4'},
+      {def:'maintenance', kcal:2745, wt:'66.4 → 66.0'},
+      {def:'maintenance', kcal:2510, wt:'~66.0'}
+    ],
+    rate:'0.27', rateLo:'0.2', rateHi:'0.35',
+    food:[
+      {rice:160, alm:10, ban:1, kri:0, tot:[2260,161,297,53]},
+      {rice:215, alm:10, ban:1, kri:0, tot:[2460,165,340,53]},
+      {rice:240, alm:10, ban:2, kri:1, tot:[2745,168,405,56]},
+      {rice:205, alm:10, ban:1, kri:1, tot:[2510,165,350,55]}
+    ],
+    intro:'Starting at 70 kg and 180 cm you are already at a BMI of 21.6, so this is a light 4 kg cut at about 0.27 kg a week — roughly 0.35%, deliberately gentler than a cut from higher bodyweight. It finishes at 66 kg and BMI 20.4, which is lean and about as far as is sensible while marathon training.',
+    note:'<strong>66 kg is the floor.</strong> Below that, at 180 cm and running 60 km a week, you start trading away the muscle and bone density that keep you injury-free. If the scale drops faster than 0.35 kg a week, add 150 kcal rather than letting it run.'
+  }
+};
+
+const FOOD = [
+  ['Whey, 1 scoop',           'fixed','1 scoop',  120,24,3,1],
+  ['Milk, skim 0%',           'fixed','500 ml',   180,18,25,0.5],
+  ['Creatine',                'fixed','5 g',      0,0,0,0],
+  ['High-protein bread',      'fixed','2 slices', 190,16,29,3],
+  ['Greek yogurt 0%',         'fixed','230 g',    136,23,8,0],
+  ['Frozen mixed berries',    'fixed','150 g',    84,2,21,1],
+  ['Oats',                    'fixed','40 g',     150,5,27,3],
+  ['Jasmine rice',            'rice', null,       0,0,0,0],
+  ['Chicken breast',          'fixed','150 g',    165,32,0,3.5],
+  ['Frozen vegetables',       'fixed','170 g',    60,4,14,0],
+  ['Eggs, boiled',            'fixed','2',        140,12,1,10],
+  ['Peanut butter',           'fixed','45 g',     265,11,9,22.5],
+  ['Almonds',                 'alm',  null,       0,0,0,0],
+  ['Banana',                  'ban',  null,       0,0,0,0],
+  ['Rice Krispie square',     'kri',  null,       0,0,0,0],
+  ['Multivitamin + fish oil', 'fixed','2 + 1',    27,0,4,1.3]
+];
+
+let ath = 'samar', ph = 0;
+
+function fmt(n,d){ return n.toLocaleString('en-CA',{minimumFractionDigits:d||0,maximumFractionDigits:d||0}); }
+
+function curWeek(){
+  const now = new Date();
+  if (now < START) return 0;
+  const w = Math.floor((now - START)/(7*864e5)) + 1;
+  return Math.min(Math.max(w,1),26);
+}
+
+function render(){
+  const A = ATH[ath];
+  document.body.dataset.ath = ath;
+  tgS.setAttribute('aria-pressed', ath==='samar');
+  tgR.setAttribute('aria-pressed', ath==='r2');
+
+  // countdown
+  const days = Math.ceil((RACE - new Date())/864e5);
+  sDays.textContent = days > 0 ? fmt(days) : '0';
+  sWeeks.textContent = days > 0 ? (days/7).toFixed(1)+' weeks out' : 'Race day';
+
+  // current week / phase
+  const cw = curWeek();
+  if (cw === 0){
+    sPhase.textContent='Pre'; sPhaseR.textContent='Block opens Mon Nov 2';
+    sKm.textContent='—'; sLong.textContent='First week is 16 km';
+    var pIdx = 0;
+  } else {
+    const row = WEEKS[cw-1]; pIdx = row[3];
+    sPhase.textContent = PHASES[pIdx].t;
+    sPhaseR.textContent = PHASES[pIdx].n + ' · week ' + cw + ' of 26';
+    sKm.textContent = row[1] + ' km';
+    sLong.textContent = cw===26 ? 'Race Sunday' : 'Long run ' + row[2] + ' km' + (row[4] ? ' · down week' : '');
+  }
+  sWt.textContent = A.cut[pIdx].wt.split('→').pop().trim().replace('~','');
+  sWtS.textContent = 'from ' + A.start + ' kg → ' + A.target + ' kg';
+  sKcal.textContent = fmt(A.cut[pIdx].kcal);
+  const t = A.food[pIdx].tot;
+  sMacro.textContent = t[1]+' P · '+t[2]+' C · '+t[3]+' F';
+
+  // phase rail
+  rail.innerHTML = PHASES.map((p,i)=>
+    `<div class="ph${i===pIdx?' on':''}"><div class="n">${p.w}</div><div class="t">${p.t}</div><div class="r">${p.d}</div></div>`
+  ).join('');
+
+  // overview cut line
+  ovCut.innerHTML = ath==='samar'
+    ? 'Samar cuts 77 → 70 kg across the first 17 weeks, then eats at maintenance through the peak block.'
+    : 'Runner 2 cuts 70 → 66 kg on a gentler deficit across the first 17 weeks, then eats at maintenance through the peak block.';
+
+  // week table
+  const max = 66;
+  wkBody.innerHTML = WEEKS.map(([w,km,lg,pi,dn])=>{
+    const cls = w===26 ? 'race' : (dn ? 'down' : '');
+    const d = new Date(START.getTime() + (w-1)*7*864e5);
+    const ds = d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+    const lab = w===26 ? '<strong>MARATHON</strong>' : fmt(lg);
+    return `<tr class="${cls}${w===cw?' now':''}"><td class="n">${w}</td><td>${ds}</td>`+
+      `<td>${PHASES[pi].t}${dn?' <span class="pill d">down</span>':''}</td>`+
+      `<td class="n">${fmt(km,km%1?1:0)}</td><td class="n">${lab}</td>`+
+      `<td><span class="bar" style="width:${Math.round(km/max*100)}%"></span></td></tr>`;
+  }).join('');
+
+  // cut table
+  cutBody.innerHTML = PHASES.map((p,i)=>
+    `<tr><td><strong>${p.t}</strong></td><td>${p.d}</td><td class="n">${p.km.replace(' km','')}</td>`+
+    `<td>${A.cut[i].def}</td><td class="n"><strong>${fmt(A.cut[i].kcal)}</strong></td>`+
+    `<td class="n">${A.cut[i].wt}</td></tr>`).join('');
+  fuelIntro.textContent = A.intro;
+  cutNote.innerHTML = A.note;
+
+  // calibration table
+  calBody.innerHTML = [
+    [`Losing ${A.rateLo}–${A.rateHi} kg`, 'On target — change nothing'],
+    ['Losing less than half that for 2 weeks', 'Drop 150 kcal (about 40 g rice)'],
+    [`Losing more than ${(parseFloat(A.rateHi)*1.5).toFixed(2)} kg`, '<strong>Add 150 kcal.</strong> Too fast costs muscle'],
+    ['Gaining during Phase 1 or 2', 'Drop 200 kcal and check portions honestly']
+  ].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+
+  renderFood();
+  renderCal();
+}
+
+function renderFood(){
+  const A = ATH[ath], f = A.food[ph];
+  const base = ATH.samar.food[0];
+  phTag.textContent = 'Phase ' + (ph+1);
+  [...phSel.children].forEach((b,i)=>b.setAttribute('aria-pressed', i===ph));
+
+  const rows = FOOD.map(([name,kind,amt,k,p,c,fat])=>{
+    let a=amt, K=k, P=p, C=c, F=fat, tag='';
+    if (kind==='rice'){ a=f.rice+' g'; K=f.rice*3.6; P=f.rice*0.068; C=f.rice*0.79; F=f.rice*0.006;
+      if (f.rice!==base.rice) tag='<span class="chg">'+(f.rice>base.rice?'+':'')+(f.rice-base.rice)+' g</span>'; }
+    if (kind==='alm'){ if(!f.alm) return ''; a=f.alm+' g'; K=f.alm*5.8; P=f.alm*0.21; C=f.alm*0.215; F=f.alm*0.5;
+      if (f.alm!==base.alm) tag='<span class="chg">'+(f.alm-base.alm)+' g</span>'; }
+    if (kind==='ban'){ a=f.ban===1?'1 medium':f.ban+' medium'; K=f.ban*105; P=f.ban*1; C=f.ban*27; F=f.ban*0.5;
+      if (f.ban!==base.ban) tag='<span class="chg">+'+(f.ban-base.ban)+'</span>'; }
+    if (kind==='kri'){ if(!f.kri) return ''; a=f.kri+''; K=f.kri*90; P=f.kri*0.6; C=f.kri*18; F=f.kri*2;
+      tag='<span class="chg">back in</span>'; }
+    return `<tr><td>${name}${tag}</td><td class="n">${a}</td><td class="n">${fmt(K)}</td>`+
+           `<td class="n">${fmt(P)}</td><td class="n">${fmt(C)}</td><td class="n">${fmt(F)}</td></tr>`;
+  }).join('');
+  foodBody.innerHTML = rows;
+
+  const t = f.tot, wt = parseFloat(A.cut[ph].wt.split('→').pop().trim().replace('~',''));
+  foodFoot.innerHTML =
+    `<tr style="font-weight:600;background:var(--surface-2)"><td>Day total</td><td class="n"></td>`+
+    `<td class="n">${fmt(t[0])}</td><td class="n">${t[1]}</td><td class="n">${t[2]}</td><td class="n">${t[3]}</td></tr>`+
+    `<tr><td colspan="2" style="color:var(--faint);font-size:11.5px">per kg at ${wt} kg</td>`+
+    `<td class="n"></td><td class="n">${(t[1]/wt).toFixed(1)}</td><td class="n">${(t[2]/wt).toFixed(1)}</td>`+
+    `<td class="n">${(t[3]/wt).toFixed(1)}</td></tr>`;
+}
+
+function renderCal(){
+  const NOTES = {
+    strides:'<strong>Strides start.</strong> After the easy run: 4 × 20 s at about 5 km effort, walking back to full recovery. Not a workout — a nervous-system reminder of what fast legs feel like, and the best tool you have for raising cadence. Quick light feet, not long strides.',
+    down:'<strong>Down week.</strong> Volume drops about 30%. This is where the previous three weeks actually become fitness. Do not add mileage because you feel good — feeling good is the point.',
+    gel:'<strong>Start carrying water</strong>, and test a gel on the long run. Not because you need fuel at 13 km, but because you want to know how your stomach handles one long before it matters.',
+    peak:'<strong>Biggest week of the phase</strong> — more than double where the month started. 15 km is about 95 minutes; take 30 g of carbs at the 45-minute mark and practise drinking.'
+  };
+  calWeeks.innerHTML = CAL.map((c,i)=>{
+    const [tu,th,sa,su,note] = c;
+    const w = WEEKS[i], mon = new Date(START.getTime() + i*7*864e5);
+    const dd = n => new Date(mon.getTime()+n*864e5).toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+    const xmas = i===7;
+    const days = [
+      ['Mon', dd(0), 'Push'],
+      ['Tue', dd(1), `Easy <strong>${tu} km</strong>` + (i>=2 ? ` + ${i>=6?6:i>=4?5:4} × 20 s strides` : '')],
+      ['Wed', dd(2), 'Pull'],
+      ['Thu', dd(3), `Easy <strong>${th} km</strong> + core`],
+      ['Fri', dd(4), xmas ? '<strong>Legs — move it.</strong> Christmas Day; shift to Sunday or skip' : 'Legs'],
+      ['Sat', dd(5), `<strong>Long ${sa} km</strong> easy`],
+      ['Sun', dd(6), su ? `Recovery <strong>${su} km</strong> very easy` : (xmas ? 'Rest, or Friday’s legs session' : 'Rest')]
+    ];
+    return `<details class="wk"${i===0?' open':''}>
+      <summary><span class="wn">W${i+1}</span><span class="wd">${dd(0)} – ${dd(6)}</span>
+        <span class="wkm">${w[1]} km${w[4]?' · <span class="pill d">down</span>':''}</span></summary>
+      <table><tbody>${days.map(d=>
+        `<tr><td class="day">${d[0]}</td><td class="num" style="color:var(--faint);width:72px">${d[1]}</td><td>${d[2]}</td></tr>`
+      ).join('')}</tbody></table>
+      ${note ? `<div style="padding:12px 15px;border-top:1px solid var(--line);font-size:13.5px;color:var(--dim)">${NOTES[note]}</div>`:''}
+    </details>`;
+  }).join('');
+}
+
+function setAth(a){ ath=a; try{localStorage.setItem('ath',a)}catch(e){} render(); }
+function setPh(i){ ph=i; renderFood(); }
+function tab(id){
+  ['ov','run','lift','fuel','p1'].forEach(x=>{ document.getElementById('p-'+x).hidden = (x!==id); });
+  document.querySelectorAll('nav.tabs button').forEach((b,i)=>
+    b.setAttribute('aria-selected', ['ov','run','lift','fuel','p1'][i]===id));
+  try{ if(/^[a-z0-9]+$/.test(id)) location.hash = id; }catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function cycleTheme(){
+  const r = document.documentElement;
+  const cur = r.getAttribute('data-theme');
+  const next = cur==='dark' ? 'light' : cur==='light' ? null : 'dark';
+  if (next) r.setAttribute('data-theme', next); else r.removeAttribute('data-theme');
+  thb.textContent = next==='dark' ? '●' : next==='light' ? '○' : '◐';
+  try{ localStorage.setItem('theme', next||'') }catch(e){}
+}
+
+try{
+  const sa = localStorage.getItem('ath'); if (sa==='r2'||sa==='samar') ath=sa;
+  const st = localStorage.getItem('theme');
+  if (st){ document.documentElement.setAttribute('data-theme',st); thb.textContent = st==='dark'?'●':'○'; }
+}catch(e){}
+render();
+const h = (location.hash||'').replace('#','');
+if (['ov','run','lift','fuel','p1'].includes(h)) tab(h);
+setInterval(()=>{ const d=Math.ceil((RACE-new Date())/864e5); sDays.textContent = d>0?fmt(d):'0'; }, 60000);
+</script>
